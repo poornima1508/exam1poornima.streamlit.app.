@@ -6,7 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Title of the app
-st.title('Part 1')
+st.title('Part 1: Data Exploration and Transformations')
+
+# Introduction text
+st.write("""
+Welcome to the data exploration app. In this app, we perform multiple data transformations on an automobile dataset:
+- Replace NaN values in the 'stroke' column with the mean value
+- Convert the 'highway-mpg' column to 'highway-L/100km'
+- Normalize the 'height' column
+- Create indicator variables for 'aspiration'
+""")
 
 # Load the dataset
 df = pd.read_csv('auto.csv', header=None)
@@ -16,56 +25,68 @@ column_names = ["symboling","normalized-losses","make","fuel-type","aspiration",
          "peak-rpm","city-mpg","highway-mpg","price"]  
 df = pd.read_csv('auto.csv', header=None, names=column_names)
 
+# Display the first few rows of the data
+st.subheader("Dataset Overview")
+st.write("Here are the first few rows of the dataset:")
 st.write(df.head())
+
+# Display the column names
+st.write("Columns in the dataset:")
 st.write(df.columns.tolist())
+
+# Replace NaN in "stroke" column with the mean value
+st.subheader("Question 1: Replace NaN in 'stroke' Column")
 avg_stroke = pd.to_numeric(df['stroke'], errors='coerce').mean()
 df['stroke'] = df['stroke'].replace('?', np.nan).astype('float')
-avg_stroke = df['stroke'].mean()
+df["stroke"].fillna(avg_stroke, inplace=True)
+st.write(f"Replaced NaN values in 'stroke' with the mean: {avg_stroke:.2f}")
 
-
-#Question #1: replace NaN in "stroke" column with the mean value.
-
-#avg_stroke=df['stroke'].astype('float').mean(axis=0)
-#print("Average of stroke:", avg_stroke)
-#df["stroke"].replace(np.nan, avg_stroke, inplace=True)
-
-#Question #2: transform mpg to L/100km in the column of "highway-mpg" and change the name of column to "highway-L/100km".
-
-# Convert highway-mpg to L/100km
+# Convert highway-mpg to L/100km and change column name
+st.subheader("Question 2: Convert 'highway-mpg' to 'highway-L/100km'")
 df["highway-L/100km"] = 235 / df["highway-mpg"]
+st.write("Transformed 'highway-mpg' to 'highway-L/100km'. Here's the updated data:")
+st.write(df[['highway-mpg', 'highway-L/100km']].head())
 
-# Check the transformed data
-df.head()
-
-#Question #3: normalize the column "height".
-
+# Normalize the 'height' column
+st.subheader("Question 3: Normalize the 'height' Column")
 df['height'] = df['height'] / df['height'].max()
-df.head()
+st.write("Normalized the 'height' column. Here's the updated data:")
+st.write(df[['height']].head())
 
-#Question #4: Similar to before, create an indicator variable for the column "aspiration"
-
-# Create dummy variables for 'aspiration'
-dummy_variable_2 = pd.get_dummies(df["aspiration"])
-
-# Rename columns for clarity
-dummy_variable_2.rename(columns={'std': 'aspiration-std', 'turbo': 'aspiration-turbo'}, inplace=True)
-
-# Merge with original DataFrame
+# Create indicator variable for 'aspiration'
+st.subheader("Question 4: Create Indicator Variable for 'Aspiration'")
+dummy_variable_2 = pd.get_dummies(df["aspiration"], prefix='aspiration')
 df = pd.concat([df, dummy_variable_2], axis=1)
-
-# Drop the original 'aspiration' column
 df.drop("aspiration", axis=1, inplace=True)
+st.write("Created dummy variables for 'aspiration'. Here's the updated data:")
+st.write(df[['aspiration-std', 'aspiration-turbo']].head())
 
-# Optional: view the updated DataFrame
-df.head()
+# Show final dataframe shape
+st.subheader("Final Dataset Information")
+st.write(f"Number of rows: {df.shape[0]}")
+st.write(f"Number of columns: {df.shape[1]}")
 
-#Question #5: Merge the new dataframe to the original (Dataframe after Question 4) dataframe, then drop the column 'aspiration'.
+# Visualizations
 
-# Merge with the existing DataFrame
-df = pd.concat([df, dummy_variable_2], axis=1)
-df.head()
+# Histogram of 'height' column
+st.subheader("Histogram of 'Height' Column (Normalized)")
+fig = plt.figure(figsize=(8, 6))
+sns.histplot(df['height'], bins=30, kde=True)
+st.pyplot(fig)
 
-#Question #6: How many Rows and Columns do you have in the final Dataframe?
+# Scatter plot of 'horsepower' vs 'curb-weight'
+st.subheader("Scatter Plot: 'Horsepower' vs 'Curb-weight'")
+fig2 = px.scatter(df, x='horsepower', y='curb-weight', title="Horsepower vs Curb-weight")
+st.plotly_chart(fig2)
 
-print("Number of rows:", df.shape[0])
-print("Number of columns:", df.shape[1])
+# Box plot for 'price' by 'body-style'
+st.subheader("Box Plot: 'Price' by 'Body Style'")
+fig3 = plt.figure(figsize=(8, 6))
+sns.boxplot(data=df, x='body-style', y='price')
+st.pyplot(fig3)
+
+# Line plot showing the trend of 'price' over 'engine-size'
+st.subheader("Line Plot: 'Price' vs 'Engine Size'")
+fig4 = px.line(df, x='engine-size', y='price', title="Price vs Engine Size")
+st.plotly_chart(fig4)
+
