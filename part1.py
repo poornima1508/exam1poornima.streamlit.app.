@@ -17,13 +17,16 @@ df = pd.read_csv('auto.csv', header=None, names=column_names)
 
 st.write(df.head())
 st.write(df.columns.tolist())
+avg_stroke = pd.to_numeric(df['stroke'], errors='coerce').mean()
+df['stroke'] = df['stroke'].replace('?', np.nan).astype('float')
+avg_stroke = df['stroke'].mean()
 
 
 #Question #1: replace NaN in "stroke" column with the mean value.
 
-avg_stroke=df['stroke'].astype('float').mean(axis=0)
-print("Average of stroke:", avg_stroke)
-df["stroke"].replace(np.nan, avg_stroke, inplace=True)
+#avg_stroke=df['stroke'].astype('float').mean(axis=0)
+#print("Average of stroke:", avg_stroke)
+#df["stroke"].replace(np.nan, avg_stroke, inplace=True)
 
 #Question #2: transform mpg to L/100km in the column of "highway-mpg" and change the name of column to "highway-L/100km".
 
