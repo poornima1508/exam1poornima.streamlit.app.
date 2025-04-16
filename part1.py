@@ -4,6 +4,13 @@ import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# Title of the app
+st.title('Part 1')
+
+# Load the dataset
+df = pd.read_csv('https://github.com/poornima1508/exam1poornima.streamlit.app./blob/main/auto.csv')
+
+
 #Question #1: replace NaN in "stroke" column with the mean value.
 
 avg_stroke=df['stroke'].astype('float').mean(axis=0)
