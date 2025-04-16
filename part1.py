@@ -62,15 +62,16 @@ st.write("Unique values in 'aspiration' column:", df['aspiration'].unique())
 # Create dummy variables for 'aspiration'
 dummy_variable_2 = pd.get_dummies(df["aspiration"], prefix='aspiration')
 
-# Check the created columns
-st.write("Columns after dummy variable creation:", dummy_variable_2.columns.tolist())
+# Show the created column names for the dummy variables
+st.write("Columns created after pd.get_dummies() for 'aspiration':", dummy_variable_2.columns.tolist())
 
 df = pd.concat([df, dummy_variable_2], axis=1)
 df.drop("aspiration", axis=1, inplace=True)
 
 # Display the new dataframe with the dummy variables
 st.write("New columns created after dummy variable transformation:")
-st.write(df[['aspiration-std', 'aspiration-turbo']].head())
+st.write(df.head())  # This will show the first few rows, including the dummy variables
+
 
 
 # Show final dataframe shape
