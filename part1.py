@@ -55,11 +55,23 @@ st.write(df[['height']].head())
 
 # Create indicator variable for 'aspiration'
 st.subheader("Question 4: Create Indicator Variable for 'Aspiration'")
+
+# Check unique values in 'aspiration' to ensure they are correct
+st.write("Unique values in 'aspiration' column:", df['aspiration'].unique())
+
+# Create dummy variables for 'aspiration'
 dummy_variable_2 = pd.get_dummies(df["aspiration"], prefix='aspiration')
+
+# Check the created columns
+st.write("Columns after dummy variable creation:", dummy_variable_2.columns.tolist())
+
 df = pd.concat([df, dummy_variable_2], axis=1)
 df.drop("aspiration", axis=1, inplace=True)
-st.write("Created dummy variables for 'aspiration'. Here's the updated data:")
+
+# Display the new dataframe with the dummy variables
+st.write("New columns created after dummy variable transformation:")
 st.write(df[['aspiration-std', 'aspiration-turbo']].head())
+
 
 # Show final dataframe shape
 st.subheader("Final Dataset Information")
