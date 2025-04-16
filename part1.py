@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 st.title('Part 1')
 
 # Load the dataset
-df = pd.read_csv('auto.csv')
+df = pd.read_csv('https://raw.githubusercontent.com/klamsal/Fall2024Exam/refs/heads/main/auto.csv')
 
 
 #Question #1: replace NaN in "stroke" column with the mean value.
