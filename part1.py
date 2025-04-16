@@ -9,6 +9,12 @@ st.title('Part 1')
 
 # Load the dataset
 df = pd.read_csv('auto.csv', header=None)
+column_names = ["symboling","normalized-losses","make","fuel-type","aspiration", "num-of-doors","body-style",
+         "drive-wheels","engine-location","wheel-base", "length","width","height","curb-weight","engine-type",
+         "num-of-cylinders", "engine-size","fuel-system","bore","stroke","compression-ratio","horsepower",
+         "peak-rpm","city-mpg","highway-mpg","price"]  
+df = pd.read_csv('auto.csv', header=None, names=column_names)
+
 st.write(df.head())
 st.write(df.columns.tolist())
 
