@@ -35,7 +35,7 @@ st.write("Here are the first few rows of the dataset:")
 st.write(df.head())
 
 # Display the column names
-st.write("Columns in the dataset:", df.columns.tolist())
+#st.write("Columns in the dataset:", df.columns.tolist())
 
 # ==============================================
 # Question 1: Handle missing values in 'stroke' column
