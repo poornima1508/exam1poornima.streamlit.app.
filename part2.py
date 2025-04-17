@@ -83,4 +83,4 @@ fig3 = px.bar(grouped_price, x='body-style', y='price',
 st.plotly_chart(fig3, use_container_width=True)
 
 st.markdown("---")
-st.markdown("<div style='text-align: center;'>Made with ❤️ by Poornima</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center;'>Made by Poornima</div>", unsafe_allow_html=True)
