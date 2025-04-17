@@ -5,13 +5,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-# Configure Streamlit page
-st.set_page_config(page_title="Automobile Data Part 2", layout="centered")
+# Streamlit page config
+st.set_page_config(page_title="Automobile Data Analysis", layout="centered")
 
 # Title
 st.title("🚗 Part 2: Statistical Analysis of Automobile Dataset")
 
-# Column names
+# Define column names
 column_names = [
     "symboling", "normalized-losses", "make", "fuel-type", "aspiration", "num-of-doors", 
     "body-style", "drive-wheels", "engine-location", "wheel-base", "length", "width", 
@@ -26,9 +26,14 @@ df = pd.read_csv("CleanedAutomobile.csv", header=None, names=column_names)
 # Replace '?' with NaN
 df.replace("?", np.nan, inplace=True)
 
-# Convert relevant columns to numeric
-numeric_cols = ['bore', 'stroke', 'compression-ratio', 'horsepower', 'price', 'peak-rpm', 'normalized-losses']
-df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='coerce')
+# Convert columns to numeric
+cols_to_convert = ['normalized-losses', 'bore', 'stroke', 'compression-ratio', 'horsepower', 'price', 'peak-rpm']
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors='coerce')
+
+# Show initial preview
+st.subheader("📋 Cleaned Data Preview")
+st.write("Make sure 'normalized-losses' is now numeric and no '?' remains:")
+st.dataframe(df[cols_to_convert].head())
 
 st.markdown("---")
 
@@ -68,7 +73,7 @@ ax2.set_title("Stroke vs Price")
 st.pyplot(fig2)
 
 st.write("""
-The regression line suggests a **weak or no linear relationship**, consistent with the low correlation coefficient.
+The regression line shows a **weak or no linear relationship**, as the correlation coefficient is close to zero.
 """)
 
 st.markdown("---")
