@@ -5,21 +5,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Title of the app
-st.title('Part 1: Automobile Data Exploration and Transformations')
+# Set the page config for better layout
+st.set_page_config(layout="wide")
 
-# Introduction text
-st.write("""
-This app explores a dataset of automobiles. We will perform the following data transformations and visualizations:
-1. Handle missing values in the 'stroke' column.
-2. Convert 'highway-mpg' to 'highway-L/100km'.
-3. Normalize the 'height' column.
-4. Create dummy variables for the 'aspiration' column.
-5. Visualize key relationships in the data.
-""")
-
-# Load the dataset
-df = pd.read_csv('auto.csv', header=None)
+# Load and preprocess the dataset
 column_names = [
     "symboling", "normalized-losses", "make", "fuel-type", "aspiration", "num-of-doors", 
     "body-style", "drive-wheels", "engine-location", "wheel-base", "length", "width", 
@@ -29,79 +18,96 @@ column_names = [
 ]
 df = pd.read_csv('auto.csv', header=None, names=column_names)
 
-# Dataset Overview
-st.subheader("Dataset Overview")
-st.write("Here are the first few rows of the dataset:")
-st.write(df.head())
+# Title of the app
+st.title('🚗 Automobile Data Exploration and Transformations')
 
-# Display the column names
-#st.write("Columns in the dataset:", df.columns.tolist())
+# Introduction text
+st.markdown("""
+Welcome! In this app, we explore and transform an automobile dataset. The key tasks include:
 
-# ==============================================
-# Question 1: Handle missing values in 'stroke' column
-st.subheader("Question 1: Handle Missing Values in 'Stroke' Column")
-avg_stroke = pd.to_numeric(df['stroke'], errors='coerce').mean()  # Calculate average stroke, ignoring non-numeric
-df['stroke'] = df['stroke'].replace('?', np.nan).astype('float')  # Replace '?' with NaN
-df["stroke"].fillna(avg_stroke, inplace=True)  # Replace NaN with the average stroke
-st.write(f"Replaced NaN values in 'stroke' with the mean: {avg_stroke:.2f}")
+- 🔧 Handling missing values in the 'stroke' column
+- 🔄 Converting 'highway-mpg' to 'highway-L/100km'
+- 📏 Normalizing the 'height' column
+- 🎯 Creating dummy variables for the 'aspiration' column
+- 📊 Visualizing important trends and relationships in the data
+""")
 
-# ==============================================
-# Question 2: Convert 'highway-mpg' to 'highway-L/100km'
-st.subheader("Question 2: Convert 'highway-mpg' to 'highway-L/100km'")
-df["highway-L/100km"] = 235 / df["highway-mpg"]  # Convert to L/100km
-st.write("Transformed 'highway-mpg' to 'highway-L/100km'. Here's the updated data:")
-st.write(df[['highway-mpg', 'highway-L/100km']].head())
+# Dataset Preview
+st.subheader("🔍 Dataset Overview")
+st.dataframe(df.head())
 
-# ==============================================
-# Question 3: Normalize the 'height' column
-st.subheader("Question 3: Normalize the 'Height' Column")
-df['height'] = df['height'] / df['height'].max()  # Normalize the height column
-st.write("Normalized the 'height' column. Here's the updated data:")
-st.write(df[['height']].head())
+# === Question 1: Handle Missing Values in 'stroke' Column ===
+st.subheader("1️⃣ Handling Missing Values in 'Stroke'")
+df['stroke'] = df['stroke'].replace('?', np.nan).astype(float)
+mean_stroke = df['stroke'].mean()
+df['stroke'].fillna(mean_stroke, inplace=True)
+st.write(f"✅ Replaced missing values in 'stroke' with the mean: **{mean_stroke:.2f}**")
 
-# ==============================================
-# Question 4: Create Dummy Variables for 'aspiration'
-st.subheader("Question 4: Create Dummy Variables for 'Aspiration'")
+# === Question 2: Convert 'highway-mpg' to 'highway-L/100km' ===
+st.subheader("2️⃣ Convert 'highway-mpg' ➡️ 'highway-L/100km'")
+df['highway-L/100km'] = 235 / df['highway-mpg']
+st.write("✅ Converted units. Here's a preview:")
+st.dataframe(df[['highway-mpg', 'highway-L/100km']].head())
 
-# Check unique values in 'aspiration' to ensure they are correct
-st.write("Unique values in 'aspiration' column:", df['aspiration'].unique())
+# === Question 3: Normalize the 'height' column ===
+st.subheader("3️⃣ Normalize the 'Height' Column")
+df['height'] = df['height'] / df['height'].max()
+st.write("✅ Normalized 'height' column. Here's a preview:")
+st.dataframe(df[['height']].head())
 
-# Create dummy variables for 'aspiration'
-dummy_variable_2 = pd.get_dummies(df["aspiration"], prefix='aspiration')
-df = pd.concat([df, dummy_variable_2], axis=1)  # Merge with original DataFrame
-df.drop("aspiration", axis=1, inplace=True)  # Drop original 'aspiration' column
+# === Question 4: Create Dummy Variables for 'aspiration' ===
+st.subheader("4️⃣ Create Dummy Variables for 'Aspiration'")
+st.write("Unique values found in `aspiration` column:", df['aspiration'].unique())
+aspiration_dummies = pd.get_dummies(df['aspiration'], prefix='aspiration')
+df = pd.concat([df, aspiration_dummies], axis=1)
+df.drop('aspiration', axis=1, inplace=True)
+st.write("✅ Created dummy variables. Preview:")
+st.dataframe(df[['aspiration_std', 'aspiration_turbo']].head())
 
-# Display the new dataframe with the dummy variables
-st.write("New columns created after dummy variable transformation:")
-st.write(df.head())
+# === Final Data Summary ===
+st.subheader("📊 Final Dataset Dimensions")
+col1, col2 = st.columns(2)
+col1.metric("Rows", df.shape[0])
+col2.metric("Columns", df.shape[1])
 
-# ==============================================
-# Final Dataset Information
-st.subheader("Final Dataset Information")
-st.write(f"Number of rows: {df.shape[0]}")
-st.write(f"Number of columns: {df.shape[1]}")
+# === Visualizations ===
+st.header("📈 Data Visualizations")
 
-# ==============================================
-# Visualizations
+# --- Histogram of 'height' ---
+st.subheader("📏 Distribution of Normalized Height")
+fig1, ax1 = plt.subplots(figsize=(8, 5))
+sns.histplot(df['height'], kde=True, bins=30, color='skyblue', ax=ax1)
+ax1.set_title("Histogram of Normalized Height", fontsize=14)
+ax1.set_xlabel("Normalized Height")
+st.pyplot(fig1)
 
-# Histogram of 'height' column
-st.subheader("Histogram of 'Height' Column (Normalized)")
-fig = plt.figure(figsize=(8, 6))
-sns.histplot(df['height'], bins=30, kde=True)
-st.pyplot(fig)
+# --- Scatter Plot: Horsepower vs Curb-weight ---
+st.subheader("⚙️ Horsepower vs Curb-weight")
+fig2 = px.scatter(
+    df, x='horsepower', y='curb-weight',
+    title="Horsepower vs Curb-weight",
+    labels={"horsepower": "Horsepower", "curb-weight": "Curb Weight"},
+    color='body-style',
+    template="plotly_white"
+)
+st.plotly_chart(fig2, use_container_width=True)
 
-# Scatter plot of 'horsepower' vs 'curb-weight'
-st.subheader("Scatter Plot: 'Horsepower' vs 'Curb-weight'")
-fig2 = px.scatter(df, x='horsepower', y='curb-weight', title="Horsepower vs Curb-weight")
-st.plotly_chart(fig2)
-
-# Box plot for 'price' by 'body-style'
-st.subheader("Box Plot: 'Price' by 'Body Style'")
-fig3 = plt.figure(figsize=(8, 6))
-sns.boxplot(data=df, x='body-style', y='price')
+# --- Box Plot: Price by Body Style ---
+st.subheader("💲 Price Distribution by Body Style")
+fig3, ax3 = plt.subplots(figsize=(8, 5))
+sns.boxplot(data=df, x='body-style', y='price', palette='pastel', ax=ax3)
+ax3.set_title("Box Plot of Price by Body Style", fontsize=14)
+ax3.set_xlabel("Body Style")
+ax3.set_ylabel("Price")
 st.pyplot(fig3)
 
-# Line plot showing the trend of 'price' over 'engine-size'
-st.subheader("Line Plot: 'Price' vs 'Engine Size'")
-fig4 = px.line(df, x='engine-size', y='price', title="Price vs Engine Size")
-st.plotly_chart(fig4)
+# --- Line Plot: Price vs Engine Size ---
+st.subheader("📈 Price Trend by Engine Size")
+fig4 = px.line(
+    df.sort_values('engine-size'), x='engine-size', y='price',
+    title="Price vs Engine Size",
+    labels={"engine-size": "Engine Size", "price": "Price"},
+    markers=True,
+    template="plotly_dark"
+)
+st.plotly_chart(fig4, use_container_width=True)
