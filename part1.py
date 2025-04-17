@@ -20,18 +20,25 @@ column_names = [
 # Load data
 df = pd.read_csv("auto.csv", header=None, names=column_names)
 
-# Clean selected columns
+# Clean and convert numeric columns
 def clean_column(col):
     return pd.to_numeric(df[col].astype(str).str.strip().replace('?', np.nan), errors='coerce')
 
-df['stroke'] = clean_column('stroke')
-df['highway-mpg'] = clean_column('highway-mpg')
-df['height'] = clean_column('height')
-df['price'] = clean_column('price')
-df['engine-size'] = clean_column('engine-size')
-df['horsepower'] = clean_column('horsepower')
-df['curb-weight'] = clean_column('curb-weight')
-df['normalized-losses'] = clean_column('normalized-losses')  # ✅ FIX ADDED
+numeric_columns = ['normalized-losses', 'stroke', 'highway-mpg', 'height', 'price', 
+                   'engine-size', 'horsepower', 'curb-weight']
+for col in numeric_columns:
+    df[col] = clean_column(col)
+
+# Check how many missing in normalized-losses
+st.subheader("🔍 Normalized Losses: Before and After Cleaning")
+st.write(f"Missing values before filling: `{df['normalized-losses'].isna().sum()}`")
+st.write(f"Data type: `{df['normalized-losses'].dtype}`")
+
+# Fill missing values in normalized-losses with mean
+mean_losses = df['normalized-losses'].mean()
+df['normalized-losses'].fillna(mean_losses, inplace=True)
+st.write(f"Filled missing values with mean: **{mean_losses:.2f}**")
+st.dataframe(df[['normalized-losses']].head(10))  # show a few rows for confirmation
 
 # App title
 st.title("🚗 Automobile Data Exploration App")
@@ -45,12 +52,6 @@ st.subheader("1️⃣ Handling Missing Values: Stroke")
 mean_stroke = df['stroke'].mean()
 df['stroke'].fillna(mean_stroke, inplace=True)
 st.write(f"Mean value used to fill missing 'stroke': **{mean_stroke:.2f}**")
-
-# --- Handling Missing Values: Normalized Losses ---
-st.subheader("🛠 Handling Missing Values: Normalized Losses")
-mean_losses = df['normalized-losses'].mean()
-df['normalized-losses'].fillna(mean_losses, inplace=True)
-st.write(f"Filled missing values in 'normalized-losses' with mean: **{mean_losses:.2f}**")
 
 # --- Convert highway-mpg to L/100km ---
 st.subheader("2️⃣ Converting `highway-mpg` ➡️ `highway-L/100km`")
